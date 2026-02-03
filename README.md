@@ -49,11 +49,7 @@ Client → API Gateway → User Service → Order Service
 
 **Voir [docs/TP-DevSecOps.md](docs/TP-DevSecOps.md) pour la Partie 1 : Description du Système**
 
-Cette documentation contient :
-- ✅ Architecture applicative détaillée
-- ✅ Points d'entrée exposés (routes API, ports, authentification)
-- ✅ Dépendances critiques (bases de données, bibliothèques tierces, images Docker)
-- ✅ Flux de données (données sensibles, communication inter-services)
+Cette documentation contient une architecture applicative détaillée, des points d'entrée exposés (routes API, ports, authentification), les dépendances critiques (bases de données, bibliothèques tierces, images Docker) et les flux de données (données sensibles, communication inter-services)
 
 ## Arrêter les services
 
