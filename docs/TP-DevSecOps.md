@@ -230,16 +230,3 @@ CREATE TABLE orders (
 ```
 
 ---
-
-## Checkpoint de validation
-
-Cette documentation permet de :
-- ✅ Lancer le projet même sans le connaître
-- ✅ Comprendre de quoi il parle, à qui, quels sont les flux de données
-- ✅ Identifier les dépendances essentielles
-- ✅ Comprendre l'architecture et les communications entre services
-
----
-
-**Date de création** : [Date]
-**Version** : 1.0 - Partie 1 uniquement
