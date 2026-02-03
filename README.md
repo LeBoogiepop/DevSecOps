@@ -41,8 +41,7 @@ Cette application est composée de **3 microservices** :
 
 ### Architecture
 ```
-Client → API Gateway → User Service
-                    → Order Service
+Client → API Gateway → User Service → Order Service
 ```
 
 ## 📚 Documentation
