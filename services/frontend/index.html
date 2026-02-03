@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevSecOps - Application Microservices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status.connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .orders-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .order-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+
+        .order-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .order-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .token-display {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 DevSecOps - Application Microservices</h1>
+            <p>API Gateway: <span id="api-status" class="status disconnected">Déconnecté</span></p>
+        </header>
+
+        <div class="main-content">
+            <!-- Authentication Card -->
+            <div class="card">
+                <h2>🔐 Authentification</h2>
+                
+                <div id="login-section">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" placeholder="test@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="login-password" placeholder="password123">
+                    </div>
+                    <button onclick="login()">Se connecter</button>
+                    <button onclick="showRegister()" style="background: #28a745; margin-top: 10px;">Créer un compte</button>
+                </div>
+
+                <div id="register-section" style="display: none;">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" id="register-name" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="register-email" placeholder="test@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="register-password" placeholder="password123">
+                    </div>
+                    <button onclick="register()">S'inscrire</button>
+                    <button onclick="showLogin()" style="background: #6c757d; margin-top: 10px;">Déjà un compte ?</button>
+                </div>
+
+                <div id="auth-message" class="message"></div>
+                <div id="token-display" class="token-display"></div>
+            </div>
+
+            <!-- Orders Card -->
+            <div class="card">
+                <h2>📦 Commandes</h2>
+                
+                <div id="order-form" style="display: none;">
+                    <div class="form-group">
+                        <label>Produit</label>
+                        <input type="text" id="order-item-name" placeholder="Nom du produit">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantité</label>
+                        <input type="number" id="order-quantity" placeholder="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Prix unitaire</label>
+                        <input type="number" id="order-price" placeholder="10.50" step="0.01">
+                    </div>
+                    <button onclick="createOrder()">Créer une commande</button>
+                </div>
+
+                <div id="orders-message" class="message"></div>
+                <div id="orders-list" class="orders-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080';
+        let authToken = localStorage.getItem('authToken') || null;
+        let currentUser = null;
+
+        // Check API status on load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkApiStatus();
+            if (authToken) {
+                loadOrders();
+                showOrderForm();
+            }
+        });
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    document.getElementById('api-status').textContent = 'Connecté';
+                    document.getElementById('api-status').className = 'status connected';
+                }
+            } catch (error) {
+                document.getElementById('api-status').textContent = 'Déconnecté';
+                document.getElementById('api-status').className = 'status disconnected';
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('register-section').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('register-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+        }
+
+        async function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            if (!name || !email || !password) {
+                showMessage('auth-message', 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('authToken', authToken);
+                    showMessage('auth-message', 'Inscription réussie !', 'success');
+                    showOrderForm();
+                    loadOrders();
+                    showLogin();
+                } else {
+                    showMessage('auth-message', data.error || 'Erreur lors de l\'inscription', 'error');
+                }
+            } catch (error) {
+                showMessage('auth-message', 'Erreur de connexion', 'error');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                showMessage('auth-message', 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('authToken', authToken);
+                    showMessage('auth-message', 'Connexion réussie !', 'success');
+                    showOrderForm();
+                    loadOrders();
+                } else {
+                    showMessage('auth-message', data.error || 'Erreur lors de la connexion', 'error');
+                }
+            } catch (error) {
+                showMessage('auth-message', 'Erreur de connexion', 'error');
+            }
+        }
+
+        function showOrderForm() {
+            document.getElementById('order-form').style.display = 'block';
+        }
+
+        async function createOrder() {
+            if (!authToken) {
+                showMessage('orders-message', 'Veuillez vous connecter', 'error');
+                return;
+            }
+
+            const itemName = document.getElementById('order-item-name').value;
+            const quantity = parseInt(document.getElementById('order-quantity').value);
+            const price = parseFloat(document.getElementById('order-price').value);
+
+            if (!itemName || !quantity || !price) {
+                showMessage('orders-message', 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            const items = [{
+                name: itemName,
+                quantity: quantity,
+                price: price
+            }];
+
+            const totalAmount = quantity * price;
+
+            try {
+                const response = await fetch(`${API_URL}/api/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ items, totalAmount })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('orders-message', 'Commande créée avec succès !', 'success');
+                    document.getElementById('order-item-name').value = '';
+                    document.getElementById('order-quantity').value = '1';
+                    document.getElementById('order-price').value = '';
+                    loadOrders();
+                } else {
+                    showMessage('orders-message', data.error || 'Erreur lors de la création', 'error');
+                }
+            } catch (error) {
+                showMessage('orders-message', 'Erreur de connexion', 'error');
+            }
+        }
+
+        async function loadOrders() {
+            if (!authToken) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/orders`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const orders = await response.json();
+
+                if (response.ok) {
+                    displayOrders(orders);
+                } else {
+                    showMessage('orders-message', 'Erreur lors du chargement des commandes', 'error');
+                }
+            } catch (error) {
+                showMessage('orders-message', 'Erreur de connexion', 'error');
+            }
+        }
+
+        function displayOrders(orders) {
+            const ordersList = document.getElementById('orders-list');
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="text-align: center; color: #999;">Aucune commande pour le moment</p>';
+                return;
+            }
+
+            ordersList.innerHTML = orders.map(order => `
+                <div class="order-item">
+                    <h3>Commande #${order.id}</h3>
+                    <p><strong>Statut:</strong> ${order.status}</p>
+                    <p><strong>Montant total:</strong> €${order.total_amount}</p>
+                    <p><strong>Date:</strong> ${new Date(order.created_at).toLocaleString('fr-FR')}</p>
+                </div>
+            `).join('');
+        }
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -3,6 +3,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -15,6 +16,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from frontend directory
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// Serve index.html for root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/index.html'));
+});
 
 // Rate limiting
 const limiter = rateLimit({

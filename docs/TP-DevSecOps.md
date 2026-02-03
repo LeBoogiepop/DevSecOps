@@ -82,9 +82,16 @@ L'application est composée de **3 microservices indépendants** communiquant vi
 
 ### Communication REST
 
-- **Format** : JSON
-- **Méthodes HTTP** : GET, POST, PUT
+Les microservices communiquent entre eux et avec les clients via **HTTP/REST** :
+
+- **Format des données** : JSON
+- **Méthodes HTTP utilisées** : GET, POST, PUT
 - **Authentification** : JWT (JSON Web Token) dans le header `Authorization: Bearer <token>`
+- **Protocole** : HTTP (HTTPS recommandé en production)
+- **Communication inter-services** : 
+  - API Gateway ↔ User Service : HTTP REST
+  - API Gateway ↔ Order Service : HTTP REST
+  - Order Service ↔ User Service : HTTP REST (pour vérification utilisateur)
 
 ---
 

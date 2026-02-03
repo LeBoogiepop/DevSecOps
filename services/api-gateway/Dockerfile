@@ -3,13 +3,16 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY api-gateway/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copy application code
-COPY . .
+COPY api-gateway/ .
+
+# Copy frontend files
+COPY frontend ./frontend
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \

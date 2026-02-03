@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MongoDB for User Service
   mongodb:
@@ -88,8 +86,8 @@ services:
   # API Gateway
   api-gateway:
     build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
+      context: ./services
+      dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     ports:
       - "8080:8080"
