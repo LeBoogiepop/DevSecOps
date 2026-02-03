@@ -101,7 +101,7 @@ docker-compose down
 
 ## 👥 Auteurs
 
-Étudiant INGE3 - Cours DevSecOps
+MILARD Jules | LACOMBE Maxime
 
 ## 📄 Licence
 
